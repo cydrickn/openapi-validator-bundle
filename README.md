@@ -1,6 +1,6 @@
 # OpenApi Validator Bundle
 
-Symfony Bundle for validating Request and Response base on open api specification.
+Symfony Bundle for validating Request and Response based on [open api specification](https://swagger.io/specification/).
 
 ### Installation
 
