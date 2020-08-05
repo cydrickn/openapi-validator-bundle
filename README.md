@@ -29,7 +29,7 @@ return [
 
 Add configuration `config/packages/cydrickn_openapi_validator.yml`
 ```yaml
-cydrickn_openapi_validator:
+cydrickn_open_api_validator:
     validate_request: true
     validate_response: true
     schema:
