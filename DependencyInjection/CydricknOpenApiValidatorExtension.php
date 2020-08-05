@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-class CydricknOpenApiSchemaExtension extends ConfigurableExtension
+class CydricknOpenApiValidatorExtension extends ConfigurableExtension
 {
     private const SCHEMAS = [
         'json-file' => JsonFileFactory::class,
