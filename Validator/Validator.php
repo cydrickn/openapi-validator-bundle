@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Cydrickn\OpenApiValidatorBundle\Validator;
 
 use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
+use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Cydrickn\OpenApiValidatorBundle\Schema\Schema;
+use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,9 +35,11 @@ class Validator
             $psrRequest = $this->psrHttpFactory->createRequest($request);
             $validator = $this->validatorBuilder->getRoutedRequestValidator();
             $operationAddress = $this->schema->findMatchingOperations($psrRequest);
-            $validator->validate($operationAddress, $psrRequest);
+            if ($operationAddress instanceof OperationAddress) {
+                $validator->validate($operationAddress, $psrRequest);
+            }
         } catch (ValidationFailed $exception) {
-            throw new ValidatorFailed($exception->getPrevious()->getMessage(), Errors::ERROR_REQUEST, $exception);
+            throw new ValidatorFailed($exception->getMessage(), Errors::ERROR_REQUEST, $exception);
         }
     }
 
@@ -46,9 +50,14 @@ class Validator
             $psrResponse = $this->psrHttpFactory->createResponse($response);
             $validator = $this->validatorBuilder->getResponseValidator();
             $operationAddress = $this->schema->findMatchingOperations($psrRequest);
-            $validator->validate($operationAddress, $psrResponse);
+            if ($operationAddress instanceof OperationAddress) {
+                $validator->validate($operationAddress, $psrResponse);
+            }
         } catch (ValidationFailed $exception) {
-            throw new ValidatorFailed($exception->getPrevious()->getMessage(), Errors::ERROR_RESPONSE, $exception);
+            if ($response->getStatusCode() >= 500) {
+                throw $exception;
+            }
+            throw new ValidatorFailed($exception->getMessage(), Errors::ERROR_RESPONSE, $exception);
         }
     }
 }

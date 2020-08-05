@@ -9,6 +9,7 @@ use Cydrickn\OpenApiValidatorBundle\Validator\ValidatorFailed;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ValidatorListener
 {
@@ -28,7 +29,7 @@ class ValidatorListener
 
     public function onKernelResponse(ResponseEvent $event)
     {
-        if ($event->isMasterRequest()) {
+        if ($event->isMasterRequest() && $event->getRequest()->attributes->get('schema.request', true)) {
             $this->validator->validateResponse($event->getRequest(), $event->getResponse());
         }
     }
@@ -38,7 +39,10 @@ class ValidatorListener
         $exception = $event->getThrowable();
         if ($exception instanceof ValidatorFailed) {
             $responseCode = Errors::getResponseCode($exception->getCode());
-            $event->setThrowable(new SchemaProblem($exception->getMessage(), $responseCode, $exception));
+            $event->setThrowable(new HttpException($responseCode, $exception->getMessage(), $exception));
+            if ($exception->getCode() === Errors::ERROR_REQUEST) {
+                $event->getRequest()->attributes->set('schema.request', false);
+            }
         }
     }
 }
