@@ -30,6 +30,8 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         $factoryArguments = [];
         if (in_array(FileFactory::class, class_parents($factoryClass))) {
             $factoryArguments['$filename'] = $mergedConfig['schema']['file'];
+        } elseif ($factoryClass === NelmioFactory::class) {
+            $factoryArguments[] = new Reference('nelmio_api_doc.generator_locator');
         }
         $schemaFactory = new Definition($factoryClass, $factoryArguments);
         $schemaFactory->setAutoconfigured(true);

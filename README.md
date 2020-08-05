@@ -1,12 +1,18 @@
 # OpenApi Validator Bundle
 
-Symfony Bundle for validating Request and Response based on [open api specification](https://swagger.io/specification/).
+Symfony Bundle for validating Request and Response based on [open api specification](https://swagger.io/specification/) 3.
 
 ### Requirements
 
-- Symfony > 5
-- PHP > 7.4
+- Symfony >= 5
+- PHP >= 7.4
 - PHP Extension JSON
+
+#### Optional
+
+- nelmio/api-doc-bundle >= 4.0 (Currently in Beta)
+    - Why 4.0, version 3 and below only supports version 2 of OpenAPI Specification.
+
 
 ### Installation
 
@@ -41,16 +47,17 @@ cydrickn_open_api_validator:
 
 |Config           |Type   |Required|Accepted Value                |Default  |Description|
 |-----------------|-------|--------|------------------------------|---------|-----------|
-|validate_request |Boolean|Yes     |true and false                |true     |Enable validating of request|
-|validate_response|Boolean|Yes     |true and false                |true     |Enable validating of response|
-|schema.factory   |String |Yes     |yaml-file, json-file|yaml-file|yaml-file|Factory to use to generate the schema for validation|
-|schema.file      |String |Yes     |                              |         |Open api specification file path|
+|validate_request |Boolean|Yes     |true or false                 |true     |Enable validating of request|
+|validate_response|Boolean|Yes     |true or false                 |true     |Enable validating of response|
+|schema.factory   |String |Yes     |yaml-file, json-file or nelmio|yaml-file|Factory to use to generate the schema for validation|
+|schema.file      |String |Required only for yaml-file and json-file|||File path of the specification|
 
 ### TODO
 
-- [ ] Add Nelmio Api Schema Factory
+- [x] Add Nelmio Api Schema Factory
 - [x] Add Dynamic Configuration
 - [x] Add document
+- [ ] Add Route Schema Factory
 - [ ] Code coverage of 100%
 - [ ] Add CI
 - [ ] Support Lower PHP Version >= 7.1

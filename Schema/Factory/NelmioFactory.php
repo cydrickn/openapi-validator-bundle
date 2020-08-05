@@ -4,13 +4,35 @@ declare(strict_types=1);
 
 namespace Cydrickn\OpenApiValidatorBundle\Schema\Factory;
 
-use cebe\openapi\spec\OpenApi;
 use League\OpenAPIValidation\PSR7\SchemaFactory;
+use Psr\Container\ContainerInterface;
+use Cydrickn\OpenApiValidatorBundle\Schema\Schema;
+use Psr\Log\LoggerInterface;
 
 class NelmioFactory implements SchemaFactory
 {
-    public function createSchema(): OpenApi
+    private ContainerInterface $generatorLocator;
+    private LoggerInterface $logger;
+
+    public function __construct(ContainerInterface $generatorLocator, LoggerInterface $logger)
     {
-        // TODO: Implement createSchema() method.
+        $this->generatorLocator = $generatorLocator;
+        $this->logger = $logger;
+    }
+
+    public function createSchema(): Schema
+    {
+        $apiDoc = $this->generatorLocator->get('default');
+        $spec = $apiDoc->generate()->toArray();
+        if ($spec['swagger']) {
+            $this->logger->warning(
+                'Validating of request/response will be ignored due to the Open API Spec'
+                . ' Version 2 and below are not supported.'
+            );
+        }
+        $schema = new Schema($spec);
+        $schema->resolveReferences();
+
+        return $schema;
     }
 }
