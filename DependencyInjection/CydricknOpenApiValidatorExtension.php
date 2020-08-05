@@ -28,7 +28,7 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
     {
         $factoryClass = self::SCHEMAS[$mergedConfig['schema']['factory']];
         $factoryArguments = [];
-        if (in_array(FileFactory::class, class_implements($factoryClass))) {
+        if (in_array(FileFactory::class, class_parents($factoryClass))) {
             $factoryArguments['$filename'] = $mergedConfig['schema']['file'];
         }
         $schemaFactory = new Definition($factoryClass, $factoryArguments);
@@ -37,7 +37,7 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         $container->setDefinition('cydrickn.openapi_validator.schema_factory', $schemaFactory);
 
         $schema = new Definition(Schema::class);
-        $schema->setFactory(['@cydrickn.openapi_validator.schema_factory', 'createSchema']);
+        $schema->setFactory([new Reference('cydrickn.openapi_validator.schema_factory'), 'createSchema']);
         $container->setDefinition('cydrickn.openapi_validator.schema', $schema);
 
         $validator = new Definition(Validator::class, [
