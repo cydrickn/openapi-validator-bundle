@@ -16,6 +16,10 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Cydrickn\OpenApiValidatorBundle\Schema\Factory\PHPFileFactory;
+use Cydrickn\OpenApiValidatorBundle\Schema\Factory\JsonDirFactory;
+use Cydrickn\OpenApiValidatorBundle\Schema\Factory\YamlDirFactory;
+use Cydrickn\OpenApiValidatorBundle\Schema\Factory\PHPDirFactory;
+use Cydrickn\OpenApiValidatorBundle\Schema\Factory\DirFactory;
 
 class CydricknOpenApiValidatorExtension extends ConfigurableExtension
 {
@@ -23,7 +27,10 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         'json-file' => JsonFileFactory::class,
         'yaml-file' => YamlFileFactory::class,
         'nelmio' => NelmioFactory::class,
-        'php' => PHPFileFactory::class,
+        'php-file' => PHPFileFactory::class,
+        'json-dir' => JsonDirFactory::class,
+        'yaml-dir' => YamlDirFactory::class,
+        'php-dir' => PHPDirFactory::class,
     ];
 
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
@@ -32,6 +39,8 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         $factoryArguments = [];
         if (in_array(FileFactory::class, class_parents($factoryClass))) {
             $factoryArguments['$filename'] = $mergedConfig['schema']['file'];
+        } elseif (in_array(DirFactory::class, class_parents($factoryClass))) {
+            $factoryArguments['$dirName'] = $mergedConfig['schema']['dir'];
         } elseif ($factoryClass === NelmioFactory::class) {
             $factoryArguments[] = new Reference('nelmio_api_doc.generator_locator');
         }

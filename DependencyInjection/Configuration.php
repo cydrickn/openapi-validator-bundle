@@ -20,7 +20,7 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->enumNode('factory')
-                            ->values(['json-file', 'yaml-file', 'nelmio'])
+                            ->values(['json-file', 'json-dir', 'yaml-file', 'yaml-dir', 'php-file', 'php-dir', 'nelmio'])
                             ->defaultValue('yaml-file')
                         ->end()
                         ->scalarNode('file')->end()
