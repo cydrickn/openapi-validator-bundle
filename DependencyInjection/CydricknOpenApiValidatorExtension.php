@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
+use Cydrickn\OpenApiValidatorBundle\Schema\Factory\PHPFileFactory;
 
 class CydricknOpenApiValidatorExtension extends ConfigurableExtension
 {
@@ -22,6 +23,7 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         'json-file' => JsonFileFactory::class,
         'yaml-file' => YamlFileFactory::class,
         'nelmio' => NelmioFactory::class,
+        'php' => PHPFileFactory::class,
     ];
 
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)

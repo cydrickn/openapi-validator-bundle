@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
                             ->defaultValue('yaml-file')
                         ->end()
                         ->scalarNode('file')->end()
+                        ->scalarNode('dir')->end()
                     ->end()
                 ->end()
             ->end();

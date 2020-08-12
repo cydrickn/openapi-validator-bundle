@@ -58,6 +58,7 @@ cydrickn_open_api_validator:
 - [x] Add Dynamic Configuration
 - [x] Add document
 - [ ] Add Route Schema Factory
+- [ ] Add PHP file Schema Factory
 - [ ] Code coverage of 100%
 - [ ] Add CI
 - [ ] Support Lower PHP Version >= 7.1
