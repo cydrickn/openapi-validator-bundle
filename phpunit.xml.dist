@@ -26,6 +26,7 @@
             <directory suffix=".php">EventListener</directory>
             <directory suffix=".php">Schema</directory>
             <directory suffix=".php">Validator</directory>
+            <directory suffix=".php">DependencyInjection</directory>
         </whitelist>
     </filter>
 </phpunit>

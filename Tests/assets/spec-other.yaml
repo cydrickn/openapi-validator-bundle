@@ -1,0 +1,30 @@
+paths:
+  "/names/{id}":
+    get:
+      description: Get current name
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      lang:
+                        type: string
+                      country:
+                        type: string
+                      type:
+                        type: string
+                  meta:
+                    type: object
+                    properties:
+                      type:
+                        type: string

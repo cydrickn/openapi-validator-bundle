@@ -11,7 +11,7 @@ class PHPDirFactory extends DirFactory
 {
     public function createSchema(): Schema
     {
-        $files = $this->getFiles('json');
+        $files = $this->getFiles('php');
         $spec = $this->combineData($files, function ($file): array {
             return require $file;
         });

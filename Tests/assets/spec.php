@@ -1,0 +1,109 @@
+<?php
+
+return [
+    "openapi" => "3.0.2",
+    "info" => [
+        "version" => "0.1.0",
+        "title" => "Test",
+        "description" => "test"
+    ],
+    "paths" => [
+        "/names" => [
+            "get" => [
+                "description" => "Get all names",
+                "responses" => [
+                    200 => [
+                        "description" => "OK",
+                        "content" => [
+                            "application/json" => [
+                                "schema" => [
+                                    "type" => "object",
+                                    "properties" => [
+                                        "data" => [
+                                            "type" => "array",
+                                            "items" => [
+                                                "type" => "object",
+                                                "properties" => [
+                                                    "id" => [
+                                                        "type" => "string"
+                                                    ],
+                                                    "name" => [
+                                                        "type" => "string"
+                                                    ],
+                                                    "lang" => [
+                                                        "type" => "string"
+                                                    ],
+                                                    "country" => [
+                                                        "type" => "string"
+                                                    ],
+                                                    "type" => [
+                                                        "type" => "string"
+                                                    ]
+                                                ]
+                                            ]
+                                        ],
+                                        "meta" => [
+                                            "type" => "object",
+                                            "properties" => [
+                                                "type" => [
+                                                    "type" => "string"
+                                                ],
+                                                "page" => [
+                                                    "type" => "integer"
+                                                ],
+                                                "limit" => [
+                                                    "type" => "integer"
+                                                ],
+                                                "total" => [
+                                                    "type" => "integer"
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            "post" => [
+                "description" => "Create name",
+                "requestBody" => [
+                    "content" => [
+                        "application/json" => [
+                            "schema" => [
+                                "type" => "object",
+                                "required" => [
+                                    "name",
+                                    "lang",
+                                    "country",
+                                    "type"
+                                ],
+                                "properties" => [
+                                    "name" => [
+                                        "type" => "string"
+                                    ],
+                                    "lang" => [
+                                        "type" => "string"
+                                    ],
+                                    "country" => [
+                                        "type" => "string"
+                                    ],
+                                    "type" => [
+                                        "type" => "string"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "responses" => [
+                    201 => [
+                        "description" => "CREATED"
+                    ]
+                ]
+            ]
+        ]
+    ]
+];
+

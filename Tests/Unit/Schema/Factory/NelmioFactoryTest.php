@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cydrickn\OpenApiValidatorBundle\Tests\Unit\Schema\Factory;
 
-use PHPUnit\Framework\TestCase;
+use Cydrickn\OpenApiValidatorBundle\Tests\Unit\TestCase;
 
 class NelmioFactoryTest extends TestCase
 {

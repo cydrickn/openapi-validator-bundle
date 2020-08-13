@@ -8,11 +8,14 @@ use League\OpenAPIValidation\PSR7\Exception\ValidationFailed;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Cydrickn\OpenApiValidatorBundle\Schema\Schema;
-use League\OpenAPIValidation\Schema\Exception\InvalidSchema;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use League\OpenAPIValidation\PSR7\Exception\Validation\InvalidParameter;
+use Throwable;
+use League\OpenAPIValidation\Schema\Exception\KeywordMismatch;
+use League\OpenAPIValidation\Schema\Exception\SchemaMismatch;
 
 class Validator
 {
@@ -39,7 +42,7 @@ class Validator
                 $validator->validate($operationAddress, $psrRequest);
             }
         } catch (ValidationFailed $exception) {
-            throw new ValidatorFailed($exception->getMessage(), Errors::ERROR_REQUEST, $exception);
+            throw new ValidatorFailed($this->getProperMessage($exception), Errors::ERROR_REQUEST, $exception);
         }
     }
 
@@ -54,10 +57,26 @@ class Validator
                 $validator->validate($operationAddress, $psrResponse);
             }
         } catch (ValidationFailed $exception) {
-            if ($response->getStatusCode() >= 500) {
-                throw $exception;
-            }
-            throw new ValidatorFailed($exception->getMessage(), Errors::ERROR_RESPONSE, $exception);
+            throw new ValidatorFailed($this->getProperMessage($exception), Errors::ERROR_RESPONSE, $exception);
         }
+    }
+
+    private function getProperMessage(Throwable $throwable)
+    {
+        $properValidationFail = [InvalidParameter::class, KeywordMismatch::class];
+        $message = $throwable->getMessage();
+        foreach ($properValidationFail as $instance) {
+            if ($throwable instanceof $instance) {
+                $message = $throwable->getMessage();
+                break;
+            } elseif (
+                $throwable->getPrevious() instanceof ValidationFailed
+                || $throwable->getPrevious() instanceof SchemaMismatch
+            ) {
+                $message = $this->getProperMessage($throwable->getPrevious());
+            }
+        }
+
+        return $message;
     }
 }

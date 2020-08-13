@@ -9,7 +9,7 @@ use Cydrickn\OpenApiValidatorBundle\Schema\Schema;
 use Cydrickn\OpenApiValidatorBundle\Validator\Errors;
 use Cydrickn\OpenApiValidatorBundle\Validator\Validator;
 use Cydrickn\OpenApiValidatorBundle\Validator\ValidatorFailed;
-use PHPUnit\Framework\TestCase;
+use Cydrickn\OpenApiValidatorBundle\Tests\Unit\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,9 +18,12 @@ class ValidatorTest extends TestCase
 {
     private function createSchema(): Schema
     {
-        $factory = new JsonFileFactory(dirname(__DIR__) . '/../assets/petstore.json');
+        $spec = array_merge_recursive(
+            require $this->getAssetPath('spec.php'),
+            require $this->getAssetPath('spec-other.php')
+        );
 
-        return $factory->createSchema();
+        return new Schema($spec);
     }
 
     /**
@@ -41,10 +44,13 @@ class ValidatorTest extends TestCase
 
     public function dataValidateRequestWithoutException()
     {
-        yield ['GET', '/api/v3/pet/1', ['Content-Type' => 'application/json']];
-        yield ['POST', '/api/v3/pet', ['Content-Type' => 'application/json'], json_encode([
+        yield ['GET', '/names', ['Content-Type' => 'application/json']];
+        yield ['GET', '/names/1', ['Content-Type' => 'application/json']];
+        yield ['POST', '/names', ['Content-Type' => 'application/json'], json_encode([
             'name' => 'test',
-            'photoUrls' => ['test'],
+            'lang' => 'en',
+            'country' => 'ph',
+            'type' => 'last'
         ])];
     }
 
@@ -61,15 +67,31 @@ class ValidatorTest extends TestCase
         foreach ($headers as $header => $value) {
             $formattedHeader = 'HTTP_' . str_replace('-', '_', strtoupper($header));
             $server[$formattedHeader] = $value;
+            if (strtolower($header) === 'content-type') {
+                $server['CONTENT_TYPE'] = $value;
+            }
         }
+
         $request = Request::create($uri, $method, [], [], [], $server, $data);
         $validator->validateRequest($request);
     }
 
     public function dataValidateRequestWithException()
     {
-        yield ['GET', '/api/v3/pet/a', ['Content-Type' => 'application/json'], null, 'Parameter \'petId\' has invalid value \'a\''];
-        yield ['POST', '/api/v3/pet', ['Content-Type' => 'application/json'], json_encode([]), 'Keyword validation failed: Required property \'name\' must be present in the object'];
+        yield [
+            'GET',
+            '/names/a',
+            ['Content-Type' => 'application/json'],
+            null,
+            'Parameter \'id\' has invalid value \'a\''
+        ];
+        yield [
+            'POST',
+            '/names',
+            ['Content-Type' => 'application/json'],
+            json_encode([]),
+            'Keyword validation failed: Required property \'name\' must be present in the object'
+        ];
     }
 
     /**
@@ -85,22 +107,26 @@ class ValidatorTest extends TestCase
 
     public function dataValidateResponseWithoutException()
     {
-        yield ['GET', '/api/v3/pet/1', new JsonResponse([
-            'id' => 10,
-            'name' => 'doggie',
-            'category' => ['id' => 1, 'name' => 'Dogs'],
-            'photoUrls' => ['dogphoto'],
-            'tags' => [['id' => 0, 'name' => 'string']],
-            'status' => 'available'
+        yield ['GET', '/names/1', new JsonResponse([
+            'data' => [
+                'id' => 1,
+                'name' => 'test',
+                'lang' => 'en',
+                'country' => 'ph',
+                'type' => 'last'
+            ],
+            'meta' => ['type' => 'name'],
         ])];
-        yield ['POST', '/api/v3/pet', new JsonResponse([
-            'id' => 10,
-            'name' => 'doggie',
-            'category' => ['id' => 1, 'name' => 'Dogs'],
-            'photoUrls' => ['dogphoto'],
-            'tags' => [['id' => 0, 'name' => 'string']],
-            'status' => 'available'
-        ])];
+        yield ['POST', '/names', new JsonResponse([
+            'data' => [
+                'id' => 1,
+                'name' => 'test',
+                'lang' => 'en',
+                'country' => 'ph',
+                'type' => 'last'
+            ],
+            'meta' => ['type' => 'name'],
+        ], JsonResponse::HTTP_CREATED)];
     }
 
     /**
@@ -120,16 +146,15 @@ class ValidatorTest extends TestCase
 
     public function dataValidateResponseWithException()
     {
-        yield ['GET', '/api/v3/pet/1', new JsonResponse([
+        yield ['GET', '/names/1', new JsonResponse([
             'id' => 10,
-            'name' => 'doggie',
-        ]), 'Keyword validation failed: Required property \'photoUrls\' must be present in the object'];
-        yield ['POST', '/api/v3/pet', new JsonResponse([
-            'id' => 10,
-            'category' => ['id' => 1, 'name' => 'Dogs'],
-            'photoUrls' => ['dogphoto'],
-            'tags' => [['id' => 0, 'name' => 'string']],
-            'status' => 'available'
-        ]), 'Keyword validation failed: Required property \'name\' must be present in the object'];
+            'name' => 'tes',
+        ]), 'Keyword validation failed: Required property \'data\' must be present in the object'];
+        yield [
+            'POST',
+            '/names',
+            new JsonResponse([]),
+            'OpenAPI spec contains no such operation [/names,post,200]'
+        ];
     }
 }

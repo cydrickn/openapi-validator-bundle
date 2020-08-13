@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Cydrickn\OpenApiValidatorBundle\Tests\Unit\Validator;
 
 use Cydrickn\OpenApiValidatorBundle\Validator\Errors;
-use PHPUnit\Framework\TestCase;
+use Cydrickn\OpenApiValidatorBundle\Tests\Unit\TestCase;
 
 class ErrorsTest extends TestCase
 {

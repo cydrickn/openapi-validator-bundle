@@ -8,15 +8,15 @@ use Cydrickn\OpenApiValidatorBundle\Schema\Factory\JsonFileFactory;
 use Cydrickn\OpenApiValidatorBundle\Schema\Schema;
 use League\OpenAPIValidation\PSR7\OperationAddress;
 use Nyholm\Psr7\Request;
-use PHPUnit\Framework\TestCase;
+use Cydrickn\OpenApiValidatorBundle\Tests\Unit\TestCase;
 
 class SchemaTest extends TestCase
 {
     private function createSchema(): Schema
     {
-        $factory = new JsonFileFactory(dirname(__DIR__) . '/../assets/petstore.json');
+        $spec = require $this->getAssetFolder() . '/spec.php';
 
-        return $factory->createSchema();
+        return new Schema($spec);
     }
 
     /**
@@ -34,8 +34,8 @@ class SchemaTest extends TestCase
 
     public function dataFindMatchingOperationsReturnOperationAddress()
     {
-        yield ['GET', '/api/v3/pet/1', '/pet/{petId}'];
-        yield ['POST', '/api/v3/pet', '/pet'];
+        yield ['GET', '/names', '/names'];
+        yield ['POST', '/names', '/names'];
     }
 
     public function testFindMatchingOperationsReturnNull()
