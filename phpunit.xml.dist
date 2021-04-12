@@ -1,32 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         backupGlobals="false"
-         colors="true"
-         bootstrap="Tests/bootstrap.php"
->
-    <php>
-        <ini name="error_reporting" value="-1" />
-        <server name="APP_ENV" value="test" force="true" />
-        <server name="SHELL_VERBOSITY" value="-1" />
-        <env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>
-    </php>
-    <testsuites>
-        <testsuite name="unit">
-            <directory suffix="Test.php">Tests/Unit</directory>
-        </testsuite>
-        <testsuite name="integration">
-            <directory suffix="Test.php">Tests/Integration</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">EventListener</directory>
-            <directory suffix=".php">Schema</directory>
-            <directory suffix=".php">Validator</directory>
-            <directory suffix=".php">DependencyInjection</directory>
-        </whitelist>
-    </filter>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" backupGlobals="false" colors="true" bootstrap="Tests/bootstrap.php">
+  <coverage processUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">EventListener</directory>
+      <directory suffix=".php">Schema</directory>
+      <directory suffix=".php">Validator</directory>
+      <directory suffix=".php">DependencyInjection</directory>
+    </include>
+  </coverage>
+  <php>
+    <ini name="error_reporting" value="-1"/>
+    <server name="APP_ENV" value="test" force="true"/>
+    <server name="SHELL_VERBOSITY" value="-1"/>
+    <env name="BOOTSTRAP_CLEAR_CACHE_ENV" value="test"/>
+  </php>
+  <testsuites>
+    <testsuite name="unit">
+      <directory suffix="Test.php">Tests/Unit</directory>
+    </testsuite>
+    <testsuite name="integration">
+      <directory suffix="Test.php">Tests/Integration</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
