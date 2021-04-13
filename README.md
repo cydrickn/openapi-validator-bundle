@@ -4,7 +4,7 @@ Symfony Bundle for validating Request and Response based on [open api specificat
 
 ### Requirements
 
-- Symfony >= 5
+- Symfony >= 4.4
 - PHP >= 7.4
 - PHP Extension JSON
 
