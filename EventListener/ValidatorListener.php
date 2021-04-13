@@ -2,6 +2,7 @@
 
 namespace Cydrickn\OpenApiValidatorBundle\EventListener;
 
+use Cydrickn\OpenApiValidatorBundle\EventListener\Condition\Condition;
 use Cydrickn\OpenApiValidatorBundle\Schema\SchemaProblem;
 use Cydrickn\OpenApiValidatorBundle\Validator\Errors;
 use Cydrickn\OpenApiValidatorBundle\Validator\Validator;
@@ -14,23 +15,29 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class ValidatorListener
 {
     private Validator $validator;
+    private ?Condition $condition;
 
-    public function __construct(Validator $validator)
-        {
-            $this->validator = $validator;
-        }
+    public function __construct(Validator $validator, ?Condition $condition = null)
+    {
+        $this->validator = $validator;
+        $this->condition = $condition;
+    }
 
     public function onKernelRequest(RequestEvent $event)
     {
         if ($event->isMasterRequest()) {
-            $this->validator->validateRequest($event->getRequest());
+            if (!($this->condition) || ($this->condition->enabled($event->getRequest()))) {
+                $this->validator->validateRequest($event->getRequest());
+            }
         }
     }
 
     public function onKernelResponse(ResponseEvent $event)
     {
         if ($event->isMasterRequest() && $event->getRequest()->attributes->get('schema.request', true)) {
-            $this->validator->validateResponse($event->getRequest(), $event->getResponse());
+            if (!($this->condition) || $this->condition->enabled($event->getRequest())) {
+                $this->validator->validateResponse($event->getRequest(), $event->getResponse());
+            }
         }
     }
 

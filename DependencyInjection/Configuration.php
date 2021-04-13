@@ -27,6 +27,16 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('dir')->end()
                     ->end()
                 ->end()
+                ->arrayNode('condition')
+                    ->children()
+                        ->arrayNode('query')
+                            ->children()
+                                ->scalarNode('name')->end()
+                                ->scalarNode('value')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
