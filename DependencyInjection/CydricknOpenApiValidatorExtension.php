@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cydrickn\OpenApiValidatorBundle\DependencyInjection;
 
+use Cydrickn\OpenApiValidatorBundle\EventListener\Condition\QueryParameterCondition;
 use Cydrickn\OpenApiValidatorBundle\EventListener\ValidatorListener;
 use Cydrickn\OpenApiValidatorBundle\Schema\Factory\JsonFileFactory;
 use Cydrickn\OpenApiValidatorBundle\Schema\Factory\NelmioFactory;
@@ -33,6 +34,10 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         'php-dir' => PHPDirFactory::class,
     ];
 
+    private const CONDITIONS = [
+        'query' => QueryParameterCondition::class
+    ];
+
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container)
     {
         $factoryClass = self::SCHEMAS[$mergedConfig['schema']['factory']];
@@ -58,8 +63,17 @@ class CydricknOpenApiValidatorExtension extends ConfigurableExtension
         ]);
         $container->setDefinition('cydrickn.openapi_validator.validator', $validator);
 
+        if ($conditionInfo = $mergedConfig['condition'] ?? null) {
+            $container->setDefinition('cydrickn.openapi_validator.condition', (function() use ($conditionInfo) {
+                $type = array_keys($conditionInfo)[0];
+                $args = array_values($conditionInfo)[0];
+                return new Definition(self::CONDITIONS[$type], [$args]);
+            })());
+        }
+
         $validatorListener = new Definition(ValidatorListener::class, [
             new Reference('cydrickn.openapi_validator.validator'),
+            !empty($mergedConfig['condition']) ? new Reference('cydrickn.openapi_validator.condition') : null
         ]);
         if ($mergedConfig['validate_request']) {
             $validatorListener->addTag('kernel.event_listener', ['event' => 'kernel.request']);
