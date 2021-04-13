@@ -41,6 +41,10 @@ cydrickn_open_api_validator:
     schema:
       factory: yaml-file
       file: %kernel.project_dir%/config/openapi/spec.yaml
+    condition:
+      query:
+        name: 'query-parameter-name'
+        value: 'query-parameter-value'
 ```
 
 #### Configurations
@@ -51,6 +55,9 @@ cydrickn_open_api_validator:
 |validate_response|Boolean|Yes     |true or false                 |true     |Enable validating of response|
 |schema.factory   |String |Yes     |yaml-file, json-file or nelmio|yaml-file|Factory to use to generate the schema for validation|
 |schema.file      |String |Required only for yaml-file and json-file|||File path of the specification|
+|condition        |Array  |No      |query                         |     |Dynamically enable/disable the validator. Validation will occur only if condition passes.
+|condition.query.name|String|Required if query is set as condition|Name of the query parameter| |Checks if this query parameter exists before running validation.
+|condition.query.value|String|No|Value of the query parameter| |Checks if the query parameter has this exact value before running validation.
 
 ### TODO
 

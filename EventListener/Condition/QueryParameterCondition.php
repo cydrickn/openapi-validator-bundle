@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 class QueryParameterCondition implements Condition
 {
     private string $name;
-    private string $value;
+    private ?string $value;
 
     /**
      * QueryParameterCondition constructor.
@@ -21,7 +21,7 @@ class QueryParameterCondition implements Condition
     public function __construct(array $info)
     {
         $this->name = $info['name'];
-        $this->value = $info['value'];
+        $this->value = $info['value'] ?? null;
     }
 
     /**
@@ -30,6 +30,9 @@ class QueryParameterCondition implements Condition
      */
     public function enabled(Request $request): bool
     {
+        if (is_null($this->value)) {
+            return !is_null($request->query->get($this->name, null));
+        }
         return $request->query->get($this->name, null) === $this->value;
     }
 }
