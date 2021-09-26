@@ -13,7 +13,7 @@ class Schema extends OpenApi
 {
     public function findMatchingOperations(RequestInterface $request): ?OperationAddress
     {
-        $pathFinder = new PathFinder($this, $request->getUri(), $request->getMethod());
+        $pathFinder = new PathFinder($this, (string)$request->getUri(), $request->getMethod());
         $matchingOperationsAddrs = $pathFinder->search();
 
         if (count($matchingOperationsAddrs) === 1) {
